@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NaukriAPI helps you discover government jobs, private jobs, admit cards and recruitment updates in India.">
+  <title>NaukriAPI - Find Your Next Job</title>
+
+  <style>
+    :root {
+      --blue: #123c69;
+      --blue-light: #eaf2ff;
+      --green: #087f5b;
+      --background: #f5f7fb;
+      --text: #172033;
+      --muted: #667085;
+      --border: #e3e8ef;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .nav {
+      max-width: 1100px;
+      margin: auto;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      font-size: 25px;
+      font-weight: 800;
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: var(--green);
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #123c69, #176b87);
+      color: white;
+      padding: 55px 20px 45px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(30px, 6vw, 46px);
+      margin: 0 0 12px;
+    }
+
+    .hero p {
+      max-width: 650px;
+      margin: 0 auto 25px;
+      color: #eaf4ff;
+    }
+
+    .search {
+      display: flex;
+      max-width: 650px;
+      margin: auto;
+      background: white;
+      padding: 6px;
+      border-radius: 12px;
+      gap: 8px;
+    }
+
+    .search input {
+      min-width: 0;
+      flex: 1;
+      border: 0;
+      outline: none;
+      padding: 13px;
+      font-size: 16px;
+    }
+
+    button,
+    .button {
+      cursor: pointer;
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 16px;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .search button {
+      background: var(--green);
+      color: white;
+    }
+
+    main {
+      max-width: 1100px;
+      padding: 30px 20px;
+      margin: auto;
+    }
+
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .category {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 10px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--blue);
+    }
+
+    .category.active {
+      background: var(--blue);
+      color: white;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin: 25px 0 15px;
+    }
+
+    .section-heading h2 {
+      font-size: 23px;
+      margin: 0;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--blue-light);
+      color: var(--blue);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .job-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .job-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 20px;
+      box-shadow: 0 3px 12px rgba(20, 40, 70, 0.03);
+    }
+
+    .job-card h3 {
+      margin: 10px 0 6px;
+      font-size: 19px;
+    }
+
+    .job-card p {
+      margin: 6px 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .job-card .dates {
+      margin-top: 14px;
+      padding: 12px;
+      background: #f7f9fc;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .job-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .apply {
+      background: var(--green);
+      color: white;
+    }
+
+    .notification {
+      background: var(--blue-light);
+      color: var(--blue);
+    }
+
+    .notice {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 28px;
+    }
+
+    .notice h2 {
+      margin-top: 0;
+    }
+
+    .notice p {
+      color: var(--muted);
+      margin-bottom: 0;
+    }
+
+    .empty {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+      color: var(--muted);
+      grid-column: 1 / -1;
+    }
+
+    footer {
+      background: #102b49;
+      color: white;
+      padding: 28px 20px;
+      text-align: center;
+      margin-top: 25px;
+    }
+
+    footer p {
+      margin: 6px;
+      font-size: 14px;
+    }
+
+    footer a {
+      color: white;
+    }
+
+    @media (max-width: 650px) {
+      .categories {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .job-list {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 40px;
+      }
+
+      .search {
+        flex-direction: column;
+      }
+
+      .search button {
+        padding: 13px;
+      }
+
+      .nav {
+        padding: 12px 15px;
+      }
+
+      .logo {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <nav class="nav">
+      <a class="logo" href="./">Naukri<span>API</span></a>
+      <a href="#jobs">Find Jobs →</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Your Career Starts Here</h1>
+    <p>
+      Discover government vacancies, private-sector opportunities,
+      recruitment notices and important job updates across India.
+    </p>
+
+    <form class="search" id="searchForm">
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="Search jobs, departments or qualifications"
+        aria-label="Search jobs"
+      >
+      <button type="submit">Search Jobs</button>
+    </form>
+  </section>
+
+  <main>
+    <section class="categories" aria-label="Job categories">
+      <button class="category active" data-category="All">All Jobs</button>
+      <button class="category" data-category="Government">Government</button>
+      <button class="category" data-category="Private">Private</button>
+      <button class="category" data-category="Admit Card">Admit Cards</button>
+    </section>
+
+    <section id="jobs">
+      <div class="section-heading">
+        <h2>Latest Opportunities</h2>
+        <span class="badge">Demo listings</span>
+      </div>
+
+      <div class="job-list" id="jobList"></div>
+    </section>
+
+    <section class="notice">
+      <h2>📢 Important Information</h2>
+      <p>
+        These are demonstration listings for testing the website.
+        They are not verified current vacancies. Check the relevant
+        recruiting organisation's official website before applying.
+      </p>
+    </section>
+
+    <section class="notice">
+      <h2>About NaukriAPI</h2>
+      <p>
+        NaukriAPI aims to make job information easier to discover by
+        organising recruitment updates, important dates and official
+        application links in one place.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p><strong>NaukriAPI</strong> — Opportunities made easier to find.</p>
+    <p>Always verify recruitment details on the official website.</p>
+    <p>© <span id="year"></span> NaukriAPI</p>
+  </footer>
+
+  <script>
+    const jobs = [
+      {
+        title: "Government Recruitment — Example",
+        organisation: "Example Government Department",
+        category: "Government",
+        location: "India",
+        qualification: "Check official notification",
+        lastDate: "Not provided",
+        notification: "",
+        apply: ""
+      },
+      {
+        title: "Private Sector Opening — Example",
+        organisation: "Example Private Employer",
+        category: "Private",
+        location: "India",
+        qualification: "Check employer's requirements",
+        lastDate: "Not provided",
+        notification: "",
+        apply: ""
+      },
+      {
+        title: "Recruitment Exam — Example Admit Card",
+        organisation: "Example Exam Authority",
+        category: "Admit Card",
+        location: "India",
+        qualification: "For demonstration only",
+        lastDate: "Check official website",
+        notification: "",
+        apply: ""
+      }
+    ];
+
+    let selectedCategory = "All";
+
+    const jobList = document.getElementById("jobList");
+    const searchInput = document.getElementById("searchInput");
+
+    function renderJobs() {
+      const query = searchInput.value.trim().toLowerCase();
+
+      const filteredJobs = jobs.filter(job => {
+        const matchesCategory =
+          selectedCategory === "All" ||
+          job.category === selectedCategory;
+
+        const searchableText = [
+          job.title,
+          job.organisation,
+          job.category,
+          job.location,
+          job.qualification
+        ].join(" ").toLowerCase();
+
+        return matchesCategory && searchableText.includes(query);
+      });
+
+      jobList.innerHTML = "";
+
+      if (filteredJobs.length === 0) {
+        jobList.innerHTML =
+          '<div class="empty">No matching listings. Try another search.</div>';
+        return;
+      }
+
+      filteredJobs.forEach(job => {
+        const card = document.createElement("article");
+        card.className = "job-card";
+
+        const title = document.createElement("h3");
+        title.textContent = job.title;
+
+        const organisation = document.createElement("p");
+        organisation.textContent = job.organisation;
+
+        const details = document.createElement("p");
+        details.textContent =
+          "Location: " + job.location +
+          " · Qualification: " + job.qualification;
+
+        const dates = document.createElement("div");
+        dates.className = "dates";
+        dates.textContent = "Important date: " + job.lastDate;
+
+        const badge = document.createElement("span");
+        badge.className = "badge";
+        badge.textContent = job.category;
+
+        const actions = document.createElement("div");
+        actions.className = "job-actions";
+
+        if (job.notification) {
+          const notification = document.createElement("a");
+          notification.className = "button notification";
+          notification.href = job.notification;
+          notification.target = "_blank";
+          notification.rel = "noopener noreferrer";
+          notification.textContent = "Official Notification";
+          actions.appendChild(notification);
+        }
+
+        if (job.apply) {
+          const apply = document.createElement("a");
+          apply.className = "button apply";
+          apply.href = job.apply;
+          apply.target = "_blank";
+          apply.rel = "noopener noreferrer";
+          apply.textContent = "Apply Online";
+          actions.appendChild(apply);
+        }
+
+        if (!job.notification && !job.apply) {
+          const placeholder = document.createElement("p");
+          placeholder.textContent =
+            "Official links will be added after verification.";
+          actions.appendChild(placeholder);
+        }
+
+        card.append(badge, title, organisation, details, dates, actions);
+        jobList.appendChild(card);
+      });
+    }
+
+    document.querySelectorAll(".category").forEach(button => {
+      button.addEventListener("click", () => {
+        selectedCategory = button.dataset.category;
+
+        document.querySelectorAll(".category").forEach(item => {
+          item.classList.toggle("active", item === button);
+        });
+
+        renderJobs();
+      });
+    });
+
+    document.getElementById("searchForm").addEventListener("submit", event => {
+      event.preventDefault();
+      renderJobs();
+      document.getElementById("jobs").scrollIntoView({
+        behavior: "smooth"
+      });
+    });
+
+    searchInput.addEventListener("input", renderJobs);
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    renderJobs();
+  </script>
+</body>
+</html>
